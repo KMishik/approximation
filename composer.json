@@ -2,6 +2,7 @@
     "name": "idiacant/approximation",
     "description": "Package for easy approximation using least squares approach",
     "type": "library",
+    "license": "Apache-2.0",
     "autoload": {
         "psr-4": {
             "Idiacant\\Approximation\\": "src/"
@@ -9,10 +10,9 @@
     },
     "authors": [
         {
-            "name": "KMishik",
-            "email": "k.mishik@gmail.com"
+            "name": "Idiacant",
+            "email": "idiacant00@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "require": {}
 }

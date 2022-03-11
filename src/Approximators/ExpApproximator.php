@@ -2,15 +2,14 @@
 
 namespace Idiacant\Approximation\Approximators;
 
-use Interpolate\Exceptions\AisMainDetZeroException;
-use Interpolate\Exceptions\AisShortArgVecException;
+use Idiacant\Approximation\Exceptions\ApproximationException;
 
 final class ExpApproximator extends AisMathAbstract
 {
     /**
      * @param array $argsValues
      * @param array $fnValues
-     * @throws AisShortArgVecException
+     * @throws ApproximationException
      */
     public function __construct(array $argsValues, array $fnValues)
     {
@@ -19,13 +18,13 @@ final class ExpApproximator extends AisMathAbstract
     }
 
     /**
-     * @throws AisMainDetZeroException
+     * @throws ApproximationException
      */
     public function calculateCoeff()
     {
         $sumX = array_sum($this->valX);
         $sumLnY = array_reduce($this->valY, function ($carry,$item) {
-                return $carry + log($item);
+                return $carry + ($item > 0 ? log($item) : 0);
             }, 0);
         $sumQuadX = array_reduce($this->valX, function ($carry,$item) {
             return $carry + pow($item,2);
@@ -34,13 +33,14 @@ final class ExpApproximator extends AisMathAbstract
         $tempX = &$this->valX;
         $tempY = &$this->valY;
         $sumMulXLnY = array_reduce($arrKeyX, function ($carry, $index) use ($tempX, $tempY) {
-            return $carry + ( $tempX[$index] * (array_key_exists($index, $tempY) ? log($tempY[$index]) : 0) );
+            return $carry + ( $tempX[$index] * (array_key_exists($index, $tempY) && $tempY[$index] > 0 ?
+                        log($tempY[$index]) : 0) );
         }, 0);
         unset($tempX, $tempY, $arrKeyX);
 
         $detMain = $sumQuadX * $this->cardinalityXSet - $sumX * $sumX;
         if (!$detMain) {
-            throw new AisMainDetZeroException();
+            throw new ApproximationException("\nMain Determinant is equal 0.\nUse Gauss method instead", -3);
         }
 
         $detA = $sumMulXLnY * $this->cardinalityXSet - $sumLnY * $sumX;

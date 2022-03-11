@@ -2,15 +2,15 @@
 
 namespace Idiacant\Approximation\Approximators;
 
-use Interpolate\Exceptions\AisMainDetZeroException;
-use Interpolate\Exceptions\AisShortArgVecException;
+
+use Idiacant\Approximation\Exceptions\ApproximationException;
 
 final class QuadraticApproximator extends AisMathAbstract
 {
     /**
      * @param array $argsValues
      * @param array $fnValues
-     * @throws AisShortArgVecException
+     * @throws ApproximationException
      */
     public function __construct(array $argsValues, array $fnValues)
     {
@@ -19,7 +19,7 @@ final class QuadraticApproximator extends AisMathAbstract
     }
 
     /**
-     * @throws AisMainDetZeroException
+     * @throws ApproximationException
      */
     public function calculateCoeff()
     {
@@ -49,7 +49,7 @@ final class QuadraticApproximator extends AisMathAbstract
             ($sumCubX * $sumX * $sumQuadX) - ($sumQuadX * $sumQuadX * $sumQuadX) - ($sumFourthX * $sumX * $sumX) -
             ($sumCubX * $sumCubX * $this->cardinalityXSet);
         if (!$detMain) {
-            throw new AisMainDetZeroException();
+            throw new ApproximationException("\nMain Determinant is equal 0.\nUse Gauss method instead", -3);
         }
 
         $detA = ($sumMulQuadXY * $sumQuadX * $this->cardinalityXSet) + ($sumCubX * $sumX * $sumY) +

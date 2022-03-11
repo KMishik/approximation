@@ -2,7 +2,7 @@
 
 namespace Idiacant\Approximation\Approximators;
 
-use Interpolate\Exceptions\AisShortArgVecException;
+use Idiacant\Approximation\Exceptions\ApproximationException;
 
 abstract class AisMathAbstract
 {
@@ -26,12 +26,13 @@ abstract class AisMathAbstract
     /**
      * @param array $argsValues
      * @param array $fnValues
-     * @throws AisShortArgVecException
+     * @throws ApproximationException
      */
     public function __construct(array $argsValues, array $fnValues) {
 
         if (count($argsValues) < 2) {
-            throw new AisShortArgVecException();
+            throw new ApproximationException("\nArgument Vector must have 2 or more values.\nHave received fewer",
+                -2);
         }
 
         $this->valX = $argsValues;

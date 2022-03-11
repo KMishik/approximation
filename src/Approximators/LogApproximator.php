@@ -2,15 +2,14 @@
 
 namespace Idiacant\Approximation\Approximators;
 
-use Interpolate\Exceptions\AisMainDetZeroException;
-use Interpolate\Exceptions\AisShortArgVecException;
+use Idiacant\Approximation\Exceptions\ApproximationException;
 
 final class LogApproximator extends AisMathAbstract
 {
     /**
      * @param array $argsValues
      * @param array $fnValues
-     * @throws AisShortArgVecException
+     * @throws ApproximationException
      */
     public function __construct(array $argsValues, array $fnValues)
     {
@@ -19,28 +18,29 @@ final class LogApproximator extends AisMathAbstract
     }
 
     /**
-     * @throws AisMainDetZeroException
+     * @throws ApproximationException
      */
     public function calculateCoeff()
     {
         $sumLnX = array_reduce($this->valX, function ($carry,$item) {
-                return $carry + log($item);
+                return $carry + ($item > 0 ? log($item) : 0);
             }, 0);
         $sumY = array_sum($this->valY);
         $sumQuadLnX = array_reduce($this->valX, function ($carry,$item) {
-                return $carry + pow(log($item),2);
+                return $carry + pow(($item > 0 ? log($item) : 0),2);
             }, 0);
         $arrKeyX = range(0, $this->cardinalityXSet - 1);
         $tempX = &$this->valX;
         $tempY = &$this->valY;
         $sumMulLnXY = array_reduce($arrKeyX, function ($carry, $index) use ($tempX, $tempY) {
-                return $carry + ( log($tempX[$index]) * (array_key_exists($index, $tempY) ? $tempY[$index] : 0) );
+                return $carry + ( ( $tempX[$index] > 0 ? log($tempX[$index]) : 0) *
+                    (array_key_exists($index, $tempY) ? $tempY[$index] : 0) );
             }, 0);
         unset($tempX, $tempY, $arrKeyX);
 
         $detMain = $sumQuadLnX * $this->cardinalityXSet - $sumLnX * $sumLnX;
         if (!$detMain) {
-            throw new AisMainDetZeroException();
+            throw new ApproximationException("\nMain Determinant is equal 0.\nUse Gauss method instead", -3);
         }
 
         $detA = $sumMulLnXY * $this->cardinalityXSet - $sumY * $sumLnX;
@@ -53,9 +53,14 @@ final class LogApproximator extends AisMathAbstract
     /**
      * @param float $argument
      * @return float
+     * @throws ApproximationException
      */
     public function calculateValue(float $argument): float
     {
+        if ($argument <= 0) {
+            throw new ApproximationException("\nArgument Logarithmic function must be great than 0", -4);
+        }
+
         $result = $this->coefficients['a'] * log($argument) + $this->coefficients['b'];
         return (float)$result;
     }
