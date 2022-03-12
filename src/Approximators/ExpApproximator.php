@@ -4,16 +4,10 @@ namespace Idiacant\Approximation\Approximators;
 
 use Idiacant\Approximation\Exceptions\ApproximationException;
 
-final class ExpApproximator extends AisMathAbstract
+final class ExpApproximator extends AbstractApproximator
 {
-    /**
-     * @param array $argsValues
-     * @param array $fnValues
-     * @throws ApproximationException
-     */
-    public function __construct(array $argsValues, array $fnValues)
+    public function __construct()
     {
-        parent::__construct($argsValues, $fnValues);
         $this->coefficients = ['a' => 0.0, 'b' => 0.0];
     }
 

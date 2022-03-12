@@ -4,7 +4,7 @@ namespace Idiacant\Approximation\Approximators;
 
 use Idiacant\Approximation\Exceptions\ApproximationException;
 
-abstract class AisMathAbstract
+abstract class AbstractApproximator
 {
     /**
      * @var array
@@ -21,25 +21,7 @@ abstract class AisMathAbstract
     /**
      * @var array
      */
-    protected array $coefficients;
-
-    /**
-     * @param array $argsValues
-     * @param array $fnValues
-     * @throws ApproximationException
-     */
-    public function __construct(array $argsValues, array $fnValues) {
-
-        if (count($argsValues) < 2) {
-            throw new ApproximationException("\nArgument Vector must have 2 or more values.\nHave received fewer",
-                -2);
-        }
-
-        $this->valX = $argsValues;
-        $this->valY = $fnValues;
-        $this->cardinalityXSet = count($this->valX);
-        $this->coefficients = [];
-    }
+    protected array $coefficients = [];
 
     /**
      * @return mixed
@@ -53,9 +35,28 @@ abstract class AisMathAbstract
     abstract function calculateValue(float $argument): float;
 
     /**
+     * @param array $argsValues
+     * @param array $fnValues
+     * @return void
+     * @throws ApproximationException
+     */
+    public function initApproximator(array $argsValues, array $fnValues)
+    {
+        if (count($argsValues) < 2) {
+            throw new ApproximationException("\nArgument Vector must have 2 or more values.\nHave received fewer",
+                -2);
+        }
+        $this->valX = $argsValues;
+        $this->valY = $fnValues;
+        $this->cardinalityXSet = count($this->valX);
+    }
+
+    /**
      * @return array
      */
     public function getCoefficients() : array {
         return $this->coefficients;
     }
+
+
 }
